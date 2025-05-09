@@ -1,5 +1,8 @@
 package br.com.fiap.contato.controllers;
 
+import br.com.fiap.contato.dto.ContatoAtualizacaoDto;
+import br.com.fiap.contato.dto.ContatoCadastroDto;
+import br.com.fiap.contato.dto.ContatoExibicaoDto;
 import br.com.fiap.contato.model.Contato;
 import br.com.fiap.contato.service.ContatoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +13,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/contatos")
+@RequestMapping("/api")
 public class ContatoController {
 
     @Autowired
@@ -18,19 +21,19 @@ public class ContatoController {
 
     @PostMapping("/contatos")
     @ResponseStatus(HttpStatus.CREATED)
-    public Contato gravarContato(@RequestBody Contato contato){
-        return service.gravar(contato);
+    public ContatoExibicaoDto gravarContato(@RequestBody ContatoCadastroDto contatoDto){
+        return service.gravar(contatoDto);
     }
 
     @GetMapping("/contatos")
     @ResponseStatus(HttpStatus.OK)
-    public List<Contato> listarContatos(){
+    public List<ContatoExibicaoDto> listarContatos(){
         return service.buscarTodosOsContatos();
     }
 
     @GetMapping("/contatos/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public Contato buscarPorId(@PathVariable Long id){
+    public ContatoExibicaoDto buscarPorId(@PathVariable Long id){
         return service.buscarPorId(id);
     }
 
@@ -42,13 +45,13 @@ public class ContatoController {
 
     @PutMapping("/contatos")
     @ResponseStatus(HttpStatus.OK)
-    public Contato atualizarContato(@RequestBody Contato contato){
-        return service.atualizar(contato);
+    public ContatoExibicaoDto atualizarContato(@RequestBody ContatoAtualizacaoDto contatoAtualizacaoDto){
+        return service.atualizar(contatoAtualizacaoDto);
     }
 
-    @GetMapping("/contatos/{nome}")
+    @GetMapping("/nomecontatos/")
     @ResponseStatus(HttpStatus.OK)
-    public Contato buscarPorNome(@PathVariable String nome){
+    public Contato buscarPorNome(@RequestBody String nome){
         return service.buscarContatoPorNome(nome).get();
     }
 

@@ -1,13 +1,19 @@
 package br.com.fiap.contato.service;
 
+import br.com.fiap.contato.dto.ContatoAtualizacaoDto;
+import br.com.fiap.contato.dto.ContatoCadastroDto;
+import br.com.fiap.contato.dto.ContatoExibicaoDto;
 import br.com.fiap.contato.model.Contato;
 import br.com.fiap.contato.repository.ContatoRepository;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ContatoService {
@@ -15,23 +21,29 @@ public class ContatoService {
     @Autowired
     private ContatoRepository contatoRepository;
 
-    public Contato gravar(Contato contato){
-        return contatoRepository.save(contato);
+    public ContatoExibicaoDto gravar(ContatoCadastroDto ContatoCadastroDto){
+        Contato contato = new Contato();
+        //Convertendo o dto em um contato
+        BeanUtils.copyProperties(ContatoCadastroDto, contato);
+        return new ContatoExibicaoDto(contatoRepository.save(contato));
     }
 
-    public Contato buscarPorId(Long id){
-        Optional<Contato> contato = contatoRepository.findById(id);
+    public ContatoExibicaoDto buscarPorId(Long id){
+        Optional<Contato> contatoOptional = contatoRepository.findById(id);
 
-        if (contato.isPresent()){
-            return contato.get();
+        if (contatoOptional.isPresent()){
+            return new ContatoExibicaoDto(contatoOptional.get());
         } else {
             throw new RuntimeException("Contato não encontrado");
         }
     }
 
-    public List<Contato> buscarTodosOsContatos(){
-        return contatoRepository.findAll();
-
+    public List<ContatoExibicaoDto> buscarTodosOsContatos() {
+        List<Contato> contatos = contatoRepository.findAll();
+        //Convertemos a lista de contatos em uma Strwm
+        return contatos.stream()
+                .map(ContatoExibicaoDto::new)
+                .collect(Collectors.toList());
     }
 
     public Contato deletar(Long id){
@@ -49,13 +61,15 @@ public class ContatoService {
         return contatoRepository.findByDataNascimentoBetween(dataInicial, dataFinal);
     }
 
-    public Contato atualizar(Contato contato){
+    public ContatoExibicaoDto atualizar(ContatoAtualizacaoDto contatoDto){
         //Passando o contato pelo Id
+        Contato contato = new Contato();
         Optional<Contato> contatoOptional = contatoRepository.findById(contato.getId());
 
+        BeanUtils.copyProperties(contatoDto, contato);
         if (contatoOptional.isPresent()){
             //O save atualiza e cria automaticamente
-            return contatoRepository.save(contato);
+            return new ContatoExibicaoDto(contatoRepository.save(contato));
         } else {
             throw new RuntimeException("Contato não encontrado");
         }
