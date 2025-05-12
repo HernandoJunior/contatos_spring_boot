@@ -5,6 +5,7 @@ import br.com.fiap.contato.dto.ContatoCadastroDto;
 import br.com.fiap.contato.dto.ContatoExibicaoDto;
 import br.com.fiap.contato.model.Contato;
 import br.com.fiap.contato.service.ContatoService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +22,7 @@ public class ContatoController {
 
     @PostMapping("/contatos")
     @ResponseStatus(HttpStatus.CREATED)
-    public ContatoExibicaoDto gravarContato(@RequestBody ContatoCadastroDto contatoDto){
+    public ContatoExibicaoDto gravarContato(@RequestBody @Valid ContatoCadastroDto contatoDto){
         return service.gravar(contatoDto);
     }
 
@@ -63,3 +64,11 @@ public class ContatoController {
 
     }
 }
+
+/*
+    Anotações Bean Validation:
+        @Valid é usado para informar que o objeto recebido deve ser validado com base nas anotações feitas no DTO
+
+    Anotações Spring Web:
+
+ */
